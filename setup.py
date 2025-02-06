@@ -5,7 +5,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    author="Zihao Ye",
+    author="Zihao Ye, Alexander Maertens",
     description="gptools",
     name='gptools',
     packages=find_packages(include=['gptools']),

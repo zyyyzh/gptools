@@ -1,4 +1,4 @@
-# collect and process gaussian output file
+# collect gaussian output file
 # Author: Zihao Ye
 # creation time: Dec, 2022
 # version: 2025/02/01
