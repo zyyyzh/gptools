@@ -66,7 +66,7 @@ def get_imag_freq(gauf):
         num_imag = -1
         freq_cons = 0.0
     
-    return {'num_imag': num_imag, 'freq_cons': freq_cons}
+    return {'num_imag': int(num_imag), 'freq_cons': round(freq_cons, 2)}
 
 
 def get_sp_energy(gauf: List[str]):
@@ -81,7 +81,7 @@ def get_sp_energy(gauf: List[str]):
         match = re.search(pattern, gauf)
         if match:
             try:
-                sp_energy = float(match.group(1))
+                sp_energy = round(float(match.group(1)), 6)
                 break
             except ValueError:
                 sp_energy = -1.0
@@ -104,8 +104,8 @@ def get_free_energy(gauf):
             if 'Sum of electronic and thermal Free Energies=' in gauf[i]:
                 free_energy = gauf[i].split()[-1]
 
-        free_corr = float(free_corr)
-        free_energy = float(free_energy)
+        free_corr = round(float(free_corr), 6)
+        free_energy = round(float(free_energy), 6)
     except:
         free_corr = -1.0
         free_energy = -1.0
@@ -132,7 +132,7 @@ def get_opt_points(gauf):
     except:
         opt_points = -1
     
-    return {'opt_points': opt_points}
+    return {'opt_points': int(opt_points)}
 
 
 def get_converge(gauf):
@@ -154,7 +154,7 @@ def get_converge(gauf):
     except:
         converge = -1
 
-    return {'converge': converge}
+    return {'converge': int(converge)}
 
 
 def get_entropy(gauf):
@@ -171,11 +171,11 @@ def get_entropy(gauf):
     for i in range(len(gauf)):
         if 'Sum of electronic and thermal Free Energies=' in gauf[i]:
             idx = i + 4
-            tot_S = float(gauf[idx].split()[-1])
-            elec_S = float(gauf[idx+1].split()[-1])
-            trans_S = float(gauf[idx+2].split()[-1])
-            rot_S = float(gauf[idx+3].split()[-1])
-            vib_S = float(gauf[idx+4].split()[-1])
+            tot_S = round(float(gauf[idx].split()[-1]), 3)
+            elec_S = round(float(gauf[idx+1].split()[-1]), 3)
+            trans_S = round(float(gauf[idx+2].split()[-1]), 3)
+            rot_S = round(float(gauf[idx+3].split()[-1]), 3)
+            vib_S = round(float(gauf[idx+4].split()[-1]), 3)
             break
 
     return {'S_tot': tot_S, 'S_elec': elec_S, 
@@ -202,13 +202,13 @@ def extract_goodvibes_result(gv_file='Goodvibes_output.dat'):
             if line.startswith('o'):
                 s_line = line.split()
                 data_dict = {'file_name': s_line[1],
-                            'ZPE': float(s_line[3]),
-                            'H_corr': round(float(s_line[4]) - float(s_line[2]), 6),
-                            'H': float(s_line[4]),
-                            'T.qh-S_tot': float(s_line[6]),
-                            'qh-G_corr': round(float(s_line[8]) - float(s_line[2]), 6),
-                            'qh-G': float(s_line[8]),
-                            }
+                             'ZPE': round(float(s_line[3]), 6),
+                             'H_corr': round(float(s_line[4]) - float(s_line[2]), 6),
+                             'H': round(float(s_line[4]), 6),
+                             'T.qh-S_tot': round(float(s_line[6]), 6),
+                             'qh-G_corr': round(float(s_line[8]) - float(s_line[2]), 6),
+                             'qh-G': round(float(s_line[8]), 6),
+                             }
                 data_list.append(data_dict)
         
         gv_df = pd.DataFrame(data_list)
@@ -217,18 +217,24 @@ def extract_goodvibes_result(gv_file='Goodvibes_output.dat'):
         return pd.DataFrame([])
 
 
-def get_solv_corr(data_df, temp):
+def get_solv_corr(data_df, temp, factors):
     '''calculate corrected free energy based on both goodvibes result and entropy scaling'''
-    def compute_corr(row, temp):
+    def compute_corr(row, temp, factors):
         # check both entropy and goodvibes output exist
         if row['H_corr'] and row['T.qh-S_tot'] and row['S_tot']:
             # compute the solv-G_corr with 50% scaling for S_rot and S_trans
-            corr = round(row['H_corr'] - (row['T.qh-S_tot'] - 0.5 * temp * (row['S_rot'] + row['S_trans'] + row['S_elec']) / 1000 / 627.509), 6)
+            corr = round(row['H_corr'] -
+                            (row['T.qh-S_tot'] -
+                                ((1-factors[0]) * temp * row['S_rot'] +
+                                 (1-factors[1]) * temp * row['S_trans'])
+                                 / 1000 / 627.509
+                             ),
+                         6)
         else:
             corr = None
         return corr
 
-    data_df['solv-G_corr'] = data_df.apply(compute_corr, args=(temp,), axis=1)
+    data_df['solv-G_corr'] = data_df.apply(compute_corr, args=(temp, factors), axis=1)
 
     def compute_corrected_G(row):
         # check both G_corr and electron energy output exist

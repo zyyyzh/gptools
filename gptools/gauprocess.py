@@ -1,5 +1,5 @@
 # collect and process gaussian output file
-# Author: Zihao Ye
+# Author: Zihao Ye & Alexander J Maertens
 # creation time: Dec, 2022
 # version: 2025/02/01
 
@@ -27,13 +27,19 @@ import pandas as pd
 
 
 def process(work_dir: str=os.getcwd(),
+            inp_file: str = None,
             need_entropy: bool=False,
             need_goodvibes: bool=False,
             temp: float=298.15,
+            factor_rot: float=0.5,
+            factor_trans: float=0.5,
             ):
     '''
-    process all log or out file in work_dir
-    determine whether they are normal termination
+    Process Gaussian log/output files and extract relevant data.
+    If a specific file is provided, process only that file.
+    Otherwise, process all log/output files in the directory.
+
+    First determine whether they are normal termination
     if normal termination,
         get single point energy (HF=)
         get gibbs free energy correction and free energy
@@ -43,11 +49,37 @@ def process(work_dir: str=os.getcwd(),
         get optimization points
         get converge status
     output to a csv file
+
+    Arguments:
+        file: specify a single file to process, if not specified (default),
+            all gaussian output files in current folder would be processed.
+        need_entropy: whether to extract entropy terms from gaussian output
+            files (default False)
+        need_goodvibes: whether to use goodvibes to do quasi-harmonic
+            corrections (default False)
+        temp: temperature (in K) used when calculating free energy terms
+            (default 298.15 K)
+        factor: scaling factor appied to the S_rot and S_trans (default 0.5)
     '''
-    # find output file
-    gau_list = [file for file in os.listdir(work_dir)
-                if file.endswith('.log') or file.endswith('.out')]
-    gau_list.sort()
+    # Determine files to process
+    if inp_file:
+        # Ensure the specified file exists and has the correct extension
+        if not (inp_file.endswith('.log') or inp_file.endswith('.out')):
+            print(f"Error: {inp_file} is not a valid .log or .out file.")
+            return
+        if not os.path.exists(inp_file):
+            print(f"Error: File {inp_file} not found.")
+            return
+        gau_list = [inp_file]
+    else:
+        # Process all log/out files in the directory
+        gau_list = [f for f in os.listdir(work_dir)
+                    if f.endswith('.log') or f.endswith('.out')]
+        gau_list.sort()
+
+    if not gau_list:
+        print("No valid Gaussian log/output files found.")
+        return
 
     # initialize data strucutre 
     data_list = []
@@ -103,7 +135,10 @@ def process(work_dir: str=os.getcwd(),
     # run solvent correction with both goodvibes and entropy terms
     if need_entropy and need_goodvibes:
         print('Calculating entropy correction in solvent model!')
-        data_df = get_solv_corr(data_df, temp)
+        print(f'Scaling factor for S_rot is {factor_rot}')
+        print(f'Scaling factor for S_trans is {factor_trans}')
+        factors = [factor_rot, factor_trans]
+        data_df = get_solv_corr(data_df, temp, factors)
 
     # write data into csv
     output_file = 'gauprocess.csv'
@@ -113,6 +148,11 @@ def process(work_dir: str=os.getcwd(),
 
 def parse_args():
     p = argparse.ArgumentParser()
+    p.add_argument(
+        '--file', '-f',
+        type=str,
+        help='Specify a single file to process (must be .log or .out)',
+    )
     p.add_argument(
         '--entropy', '-s',
         action='store_const',
@@ -132,6 +172,18 @@ def parse_args():
         type=float,
         default=298.15,
         help='temperature used in free energy calculation (default: 298.15K)',
+    )
+    p.add_argument(
+        '--factor_rot',
+        type=float,
+        default=0.5,
+        help='scaling factor for S_rot (default: 0.5)',
+    )
+    p.add_argument(
+        '--factor_trans',
+        type=float,
+        default=0.5,
+        help='scaling factor for S_trans (default: 0.5)',
     )
     return p.parse_args()
 
