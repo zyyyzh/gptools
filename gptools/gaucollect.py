@@ -1,7 +1,7 @@
 # collect gaussian output file
 # Author: Zihao Ye
 # creation time: Dec, 2022
-# version: 2025/02/01
+# version: 2025/02/09
 
 import os
 import re
@@ -150,21 +150,25 @@ def main(main_dir: str=os.getcwd(),
         with open(gau_file) as f:
             gauf = f.readlines()
 
-        if get_termination(gauf):  # normal termination
-            pass
-        else:  # abnormal termination or running
-            # get jobid
-            ofile_list = [of for of in os.listdir(main_dir) if of.startswith(f"{file.split('.')[0]}.o")]
-            if not ofile_list:
-                jobid = ''
-            else:
-                ofile = ofile_list[0]
-                jobid = ofile.split('.o')[-1]
+        # get jobid
+        ofile_list = [of for of in os.listdir(main_dir) if of.startswith(f"{file.split('.')[0]}.o")]
+        if not ofile_list:
+            jobid = ''
+        else:
+            ofile = ofile_list[0]
+            jobid = ofile.split('.o')[-1]
+        
+        # normal termination
+        if get_termination(gauf):
+            print(f'{file} terminated normally!')
+            remove_list.append((file, jobid))
+        # error termination or running
+        else:  
             # determine running or error
             if jobid in running_jobid:  # running
-                print(f'file {file} is still running!')
+                print(f'{file} is still running!')
             else:  # error
-                print(f'file {file} did not terminate normally!')
+                print(f'{file} did not terminate normally!')
                 if need_error:
                     os.system(f'cp log/{file} log/error/')
                 if deepclean:

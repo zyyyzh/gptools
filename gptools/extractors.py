@@ -1,7 +1,7 @@
 # process gaussian output file
 # Author: Zihao Ye
 # creation time: Dec, 2022
-# version: 2025/02/01
+# version: 2025/02/15
 
 import os
 import re
@@ -77,6 +77,7 @@ def get_sp_energy(gauf: List[str]):
     gauf = [x.strip() for x in gauf]
     gauf = ''.join(gauf)
     gauf = gauf.replace('\n', '')
+
     for pattern in PATTERN_LIST:
         match = re.search(pattern, gauf)
         if match:
@@ -86,7 +87,8 @@ def get_sp_energy(gauf: List[str]):
             except ValueError:
                 sp_energy = -1.0
         else:
-            s_penergy = -1.0
+            sp_energy = -1.0
+
     return {'E': sp_energy}
 
 

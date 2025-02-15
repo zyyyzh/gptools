@@ -1,2 +1,3 @@
 /gptools/build/*
+/gptools.egg-info/*
 /gptools/__pycache__/*
