@@ -5,8 +5,8 @@ Tools to extract all free energy related info from gaussian output and goodvibes
 ## Author and Version
 
 Author: Zihao Ye, Alexander Maertens  
-Version: v0.0.2  
-Date: 25/02/05  
+Version: v0.0.3  
+Date: 25/02/19  
 
 ## Environment Setup, Installation and Test
 

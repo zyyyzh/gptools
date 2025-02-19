@@ -11,5 +11,5 @@ setup(
     packages=find_packages(include=['gptools']),
     package_data={'': []},
     include_package_data=True,
-    version='0.0.2',
+    version='0.0.3',
 )
