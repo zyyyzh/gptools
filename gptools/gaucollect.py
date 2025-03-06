@@ -1,7 +1,7 @@
 # collect gaussian output file
 # Author: Zihao Ye
 # creation time: Dec, 2022
-# version: 2025/02/09
+# version: 2025/03/05
 
 import os
 import re
@@ -12,12 +12,6 @@ import argparse
 from copy import copy
 from typing import List
 
-# 
-PATTERN_LIST = [
-    r'CCSD\(T\)=(-?\d+\.\d+)(\\|\|)R',
-    r'MP2=(-?\d+\.\d+)(\\|\|)R',
-    r'HF=(-?\d+\.\d+)(\\|\|)R'
-]
 
 # bash command to get queue info
 QUEUE_CMD = "qstat -u zye"
@@ -183,6 +177,8 @@ def main(main_dir: str=os.getcwd(),
             os.system(f'rm -f {prefix}.gjf')
             os.system(f'rm -f {prefix}.o*')
             os.system(f'rm -f {prefix}.po*')
+            os.system(f'rm -f {prefix}.chk')
+            os.system(f'rm -f {prefix}.fchk')
             os.system(f'rm -rf {jobid}')
 
 
