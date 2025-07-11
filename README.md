@@ -90,6 +90,32 @@ Output (besides basic):
 Command: `python -m gptools -g -s`
 Output (besides mentioned above): 
 - `solv-G_corr`: qh and entropy scaling corrected free energy correction (solv-G-E)
-- `solv-G`: qh and entropy scaling corrected free energy
+- `solv-G`: qh and entropy scaling corrected free energy  
 
-Note: now scaling method is 50% of S_trans and S_rot and S_elec, maybe support different later
+Scaling factor of S_trans and S_rot could be adjusted by `--factor_trans [float] ` and `--factor_rot [float] `, default value is 0.5 for both.
+
+### Generate SI txt file
+**Requirements:**  
+This function cannot be used unless gjftools is also installed!  
+All optimization files (with freq) should be accompied by a single point file with extra suffix "_sp".  
+For example: D-1-reactant.log & D-1-reactant_sp.log  
+
+Command: `python -m gptools [-g] [-s] --gensi`  
+Output:  
+A txt file including SI results with format of:
+```
+D-1-Hex-4_6-Me-2-pyrimidone
+E=-653.349033
+E_SP=-654.058422
+H=-653.732985
+G=-653.790625
+charge and multiplicity: 0 1
+Cartesian coordinates:
+C    -1.939343  -0.804694  -0.296330
+C    -0.123427  0.776518  -0.153597
+C    -0.937281  1.788189  0.186678
+C    -2.044149  1.193569  -0.669656
+H    -0.840745  2.703419  0.767000
+...
+```
+

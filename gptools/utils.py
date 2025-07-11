@@ -1,3 +1,8 @@
+# collect gaussian output file
+# Author: Zihao Ye
+# creation time: Dec, 2022
+# version: 2025/03/05
+
 import pandas as pd
 from collections import defaultdict
 

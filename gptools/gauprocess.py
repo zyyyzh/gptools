@@ -4,10 +4,7 @@
 # version: 2025/02/01
 
 import os
-import re
-import sys
 import csv
-import argparse
 import subprocess
 
 from gptools.extractors import (
@@ -148,52 +145,3 @@ def process(work_dir: str=os.getcwd(),
     output_file = 'gauprocess.csv'
     data_df.to_csv(output_file, index=False)
     print('All data wrote to gauprocess.csv in current folder!')
-
-
-def parse_args():
-    p = argparse.ArgumentParser()
-    p.add_argument(
-        '--file', '-f',
-        type=str,
-        help='Specify a single file to process (must be .log or .out)',
-    )
-    p.add_argument(
-        '--entropy', '-s',
-        action='store_const',
-        const=True,
-        default=False,
-        help='if specified, extract output different entropy terms in gaussian output file (default: False)',
-    )
-    p.add_argument(
-        '--goodvibes', '-g',
-        action='store_const',
-        const=True,
-        default=False,
-        help='if specified, run goodvibes and merge the results with original gaussian output (default: False)',
-    )
-    p.add_argument(
-        '--temperature', '-t',
-        type=float,
-        default=298.15,
-        help='temperature used in free energy calculation (default: 298.15K)',
-    )
-    p.add_argument(
-        '--concentration', '-c',
-        type=float,
-        default=1.0,
-        help='concentration used in free energy calculation (default: 1M)',
-    )
-    p.add_argument(
-        '--factor_rot',
-        type=float,
-        default=0.5,
-        help='scaling factor for S_rot (default: 0.5)',
-    )
-    p.add_argument(
-        '--factor_trans',
-        type=float,
-        default=0.5,
-        help='scaling factor for S_trans (default: 0.5)',
-    )
-    return p.parse_args()
-

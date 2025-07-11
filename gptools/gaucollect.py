@@ -14,8 +14,8 @@ from typing import List
 
 
 # bash command to get queue info
-# QUEUE_CMD = "qstat -u zye"  # SGE
-QUEUE_CMD = 'squeue -u zye3 -o "%.8i %.9P %.40j %.4u %.8T %.10M %.10l %.4C %R"'  # Slurm
+QUEUE_CMD = "qstat -u zye"  # SGE
+# QUEUE_CMD = 'squeue -u zye3 -o "%.8i %.9P %.40j %.4u %.8T %.10M %.10l %.4C %R"'  # Slurm
 
 
 def get_termination(gauf):

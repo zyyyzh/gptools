@@ -1,5 +1,5 @@
-# process gaussian output file
-# Author: Zihao Ye
+# extract data from gaussian output files and goodvibe output files
+# Author: Zihao Ye & Alexander J Maertens
 # creation time: Dec, 2022
 # version: 2025/02/15
 
