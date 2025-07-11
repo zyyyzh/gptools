@@ -31,6 +31,7 @@ def process(work_dir: str=os.getcwd(),
             need_entropy: bool=False,
             need_goodvibes: bool=False,
             temp: float=298.15,
+            conc: float=1.0,
             factor_rot: float=0.5,
             factor_trans: float=0.5,
             ):
@@ -59,6 +60,8 @@ def process(work_dir: str=os.getcwd(),
             corrections (default False)
         temp: temperature (in K) used when calculating free energy terms
             (default 298.15 K)
+        conc: concentraion (in M) used when calculating free energy terms
+            (default 1 M)
         factor: scaling factor appied to the S_rot and S_trans (default 0.5)
     '''
     # Determine files to process
@@ -86,6 +89,7 @@ def process(work_dir: str=os.getcwd(),
 
     # start processing
     print(f'Temperature used is {temp}K!')
+    print(f'Concentration used is {conc}M!')
     print('Extracting data from gaussian output!')
     for file in gau_list:
         gau_file = os.path.abspath(work_dir + '/' + file)
@@ -121,7 +125,7 @@ def process(work_dir: str=os.getcwd(),
     # use goodvibes
     if need_goodvibes:
         print('Running goodvibes!')
-        p = subprocess.Popen(f'python -m goodvibes -c 1 -t {temp} *', shell=True,
+        p = subprocess.Popen(f'python -m goodvibes -c {conc} -t {temp} *', shell=True,
                              stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         p.wait()
         gv_df = extract_goodvibes_result()
@@ -172,6 +176,12 @@ def parse_args():
         type=float,
         default=298.15,
         help='temperature used in free energy calculation (default: 298.15K)',
+    )
+    p.add_argument(
+        '--concentration', '-c',
+        type=float,
+        default=1.0,
+        help='concentration used in free energy calculation (default: 1M)',
     )
     p.add_argument(
         '--factor_rot',

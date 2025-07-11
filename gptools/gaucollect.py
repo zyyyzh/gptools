@@ -14,7 +14,8 @@ from typing import List
 
 
 # bash command to get queue info
-QUEUE_CMD = "qstat -u zye"
+# QUEUE_CMD = "qstat -u zye"  # SGE
+QUEUE_CMD = 'squeue -u zye3 -o "%.8i %.9P %.40j %.4u %.8T %.10M %.10l %.4C %R"'  # Slurm
 
 
 def get_termination(gauf):
@@ -154,15 +155,15 @@ def main(main_dir: str=os.getcwd(),
         
         # normal termination
         if get_termination(gauf):
-            print(f'{file} terminated normally!')
+            print(f'o {file} terminated normally!')
             remove_list.append((file, jobid))
         # error termination or running
         else:  
             # determine running or error
             if jobid in running_jobid:  # running
-                print(f'{file} is still running!')
+                print(f'o {file} is still running!')
             else:  # error
-                print(f'{file} did not terminate normally!')
+                print(f'x {file} failed!')
                 if need_error:
                     os.system(f'cp log/{file} log/error/')
                 if deepclean:

@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 
-"""The setup script."""
+"""
+The setup script.
+Date:2025-07-11
+"""
 
 from setuptools import setup, find_packages
 
@@ -11,5 +14,5 @@ setup(
     packages=find_packages(include=['gptools']),
     package_data={'': []},
     include_package_data=True,
-    version='0.0.3',
+    version='0.0.5',
 )
