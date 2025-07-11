@@ -26,11 +26,17 @@ pip install -e .
 
 Finally, go to test file folder ('/your/path/gptools/test/'), run:
 ```
-python -m gptools -s -g
+python -m gptools -s -g -c 1.5 -t 273.15
 ```
 Compare the `gauprocess.csv` with `gauprocess_template.csv` to see if they are the same.
 
 If so, you are ready to use gptools!
+
+If you also want to test --gensi function (extra dependency of gjftools is needed), run:
+```
+python -m gptools -s -g -c 1.5 -t 273.15 --gensi
+```
+Compare the `SI_coord.txt` with `SI_coord_template.txt` to see if they are the same.
 
 ## Usage
 
@@ -64,7 +70,7 @@ Output:
 
 ### With goodvibes only
 
-Command: `python -m gptools -g`
+Command: `python -m gptools -g`  
 Output (besides basic): 
 - `ZPE`: file name of the processed file (without suffix)
 - `H_corr`: enthalpy correction (H-E) from goodvibes output
@@ -73,7 +79,9 @@ Output (besides basic):
 - `qh-G_corr`: qh corrected free energy correction (qh-G-E) from goodvibes output
 - `qh-G`: qh corrected free energy from goodvibes output
 
-Note: goodvibes is invoked with 1M as standard state!
+Extra keywords:
+- `-t [298.15]`: temperature in K which is used by goodvibes (default 298.15 K)  
+- `-c [1.0]`: concentration in M which is used by goodvibes (default 1.0 M)  
 
 ### With entropy terms only
 
@@ -98,6 +106,7 @@ Scaling factor of S_trans and S_rot could be adjusted by `--factor_trans [float]
 **Requirements:**  
 This function cannot be used unless gjftools is also installed!  
 All optimization files (with freq) should be accompied by a single point file with extra suffix "_sp".  
+Also please change all .out file to .log file before using --gensi function to avoid errors!
 For example: D-1-reactant.log & D-1-reactant_sp.log  
 
 Command: `python -m gptools [-g] [-s] --gensi`  

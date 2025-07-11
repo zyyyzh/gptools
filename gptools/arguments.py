@@ -34,6 +34,12 @@ def parse_args():
         help='temperature used in free energy calculation (default: 298.15K)',
     )
     p.add_argument(
+        '--concentration', '-c',
+        type=float,
+        default=1.0,
+        help='concentration used in free energy calculation (default: 1.0M)',
+    )
+    p.add_argument(
         '--factor_rot',
         type=float,
         default=0.5,
